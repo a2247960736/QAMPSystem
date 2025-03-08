@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.course.mapper.CourseManagementMapper">
+    
+    <resultMap type="CourseManagement" id="CourseManagementResult">
+        <result property="courseId"    column="course_id"    />
+        <result property="courseCode"    column="course_code"    />
+        <result property="courseSubject"    column="course_subject"    />
+        <result property="courseName"    column="course_name"    />
+        <result property="price"    column="price"    />
+        <result property="targetAudience"    column="target_audience"    />
+        <result property="courseDescription"    column="course_description"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectCourseManagementVo">
+        select course_id, course_code, course_subject, course_name, price, target_audience, course_description, created_at, updated_at from course_management
+    </sql>
+
+    <select id="selectCourseManagementList" parameterType="CourseManagement" resultMap="CourseManagementResult">
+        <include refid="selectCourseManagementVo"/>
+        <where>  
+            <if test="courseCode != null  and courseCode != ''"> and course_code = #{courseCode}</if>
+            <if test="courseSubject != null  and courseSubject != ''"> and course_subject = #{courseSubject}</if>
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="targetAudience != null  and targetAudience != ''"> and target_audience like concat('%', #{targetAudience}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectCourseManagementByCourseId" parameterType="Long" resultMap="CourseManagementResult">
+        <include refid="selectCourseManagementVo"/>
+        where course_id = #{courseId}
+    </select>
+
+    <insert id="insertCourseManagement" parameterType="CourseManagement" useGeneratedKeys="true" keyProperty="courseId">
+        insert into course_management
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseCode != null and courseCode != ''">course_code,</if>
+            <if test="courseSubject != null and courseSubject != ''">course_subject,</if>
+            <if test="courseName != null and courseName != ''">course_name,</if>
+            <if test="price != null">price,</if>
+            <if test="targetAudience != null">target_audience,</if>
+            <if test="courseDescription != null">course_description,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseCode != null and courseCode != ''">#{courseCode},</if>
+            <if test="courseSubject != null and courseSubject != ''">#{courseSubject},</if>
+            <if test="courseName != null and courseName != ''">#{courseName},</if>
+            <if test="price != null">#{price},</if>
+            <if test="targetAudience != null">#{targetAudience},</if>
+            <if test="courseDescription != null">#{courseDescription},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCourseManagement" parameterType="CourseManagement">
+        update course_management
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseCode != null and courseCode != ''">course_code = #{courseCode},</if>
+            <if test="courseSubject != null and courseSubject != ''">course_subject = #{courseSubject},</if>
+            <if test="courseName != null and courseName != ''">course_name = #{courseName},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="targetAudience != null">target_audience = #{targetAudience},</if>
+            <if test="courseDescription != null">course_description = #{courseDescription},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </trim>
+        where course_id = #{courseId}
+    </update>
+
+    <delete id="deleteCourseManagementByCourseId" parameterType="Long">
+        delete from course_management where course_id = #{courseId}
+    </delete>
+
+    <delete id="deleteCourseManagementByCourseIds" parameterType="String">
+        delete from course_management where course_id in 
+        <foreach item="courseId" collection="array" open="(" separator="," close=")">
+            #{courseId}
+        </foreach>
+    </delete>
+</mapper>
