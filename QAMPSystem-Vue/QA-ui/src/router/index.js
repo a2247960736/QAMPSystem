@@ -157,6 +157,57 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/manager/requirement/data',
+    component: Layout,
+    hidden: true,
+    permissions: ['manager:requirement:list'],
+    children: [
+      {
+        path: 'index/:projectId',
+        component: () => import('@/views/manager/requirement/data'),
+        name: 'RequirementData',
+        meta: {
+          title: '项目需求',
+          activeMenu: '/manager/project'
+        }
+      }
+    ]
+  },
+  {
+    path: '/manager/requirement/data',
+    component: Layout,
+    hidden: true,
+    permissions: ['manager:requirement:list'],
+    children: [
+      {
+        path: 'index/:projectId',
+        component: () => import('@/views/manager/requirement/data'),
+        name: 'RequirementData',
+        meta: {
+          title: '项目需求',
+          activeMenu: '/manager/project'
+        }
+      }
+    ]
+  },
+  {
+    path: '/manager/requirement/data',
+    component: Layout,
+    hidden: true,
+    permissions: ['manager:requirement:list'],
+    children: [
+      {
+        path: 'index/:projectId',
+        component: () => import('@/views/manager/requirement/data'),
+        name: 'RequirementData',
+        meta: {
+          title: '项目需求',
+          activeMenu: '/manager/project'
+        }
+      }
+    ]
   }
 ]
 

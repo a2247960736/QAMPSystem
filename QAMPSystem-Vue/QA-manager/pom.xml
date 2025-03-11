@@ -9,7 +9,7 @@
         <version>3.8.9</version>
     </parent>
 
-    <groupId>com.ruoyi</groupId>
+    <groupId>com.qa</groupId>
     <artifactId>QA-manager</artifactId>
 
     <properties>
@@ -17,5 +17,27 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <!-- 核心模块-->
+        <dependency>
+            <groupId>com.qa</groupId>
+            <artifactId>QA-framework</artifactId>
+        </dependency>
+
+<!--    lombok    -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 
 </project>

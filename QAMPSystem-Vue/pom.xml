@@ -9,7 +9,7 @@
     <version>3.8.9</version>
 
     <name>QA</name>
-    <url>http://www.ruoyi.vip</url>
+    <url></url>
     <description>质量管理系统</description>
     
     <properties>
@@ -218,6 +218,15 @@
                 <version>${QA.version}</version>
             </dependency>
 
+            <!-- 质量管理-->
+            <dependency>
+                <groupId>com.qa</groupId>
+                <artifactId>QA-manager</artifactId>
+                <version>${QA.version}</version>
+            </dependency>
+
+
+
         </dependencies>
     </dependencyManagement>
 
@@ -228,6 +237,7 @@
         <module>QA-quartz</module>
         <module>QA-generator</module>
         <module>QA-common</module>
+        <module>QA-manager</module>
     </modules>
     <packaging>pom</packaging>
 

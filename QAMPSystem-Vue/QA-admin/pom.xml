@@ -61,6 +61,13 @@
             <artifactId>QA-generator</artifactId>
         </dependency>
 
+        <!-- 质量管理-->
+        <dependency>
+            <groupId>com.qa</groupId>
+            <artifactId>QA-manager</artifactId>
+            <version>${QA.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
