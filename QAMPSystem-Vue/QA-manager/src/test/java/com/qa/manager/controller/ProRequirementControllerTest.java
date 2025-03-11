@@ -1,16 +1,13 @@
 package com.qa.manager.controller;
 
 import com.qa.manager.domain.ProRequirement;
-import com.qa.manager.domain.ProRequirementVo;
+import com.qa.manager.domain.Vo.ProRequirementVo;
 import com.qa.manager.service.IProRequirementService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created with IntelliJ IDEA.

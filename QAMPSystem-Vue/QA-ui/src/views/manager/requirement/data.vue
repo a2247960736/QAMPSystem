@@ -101,7 +101,11 @@
 
     <el-table v-loading="loading" :data="requirementList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="技术主键" align="center" prop="id" />
+       <el-table-column label="序号" align="center" width="80">
+    <template #default="scope">
+      {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+    </template>
+  </el-table-column>
       <el-table-column label="业务标识" align="center" prop="reqId" />
       
 <el-table-column label="所属项目" align="center" prop="projectId">

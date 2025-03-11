@@ -2,7 +2,7 @@ package com.qa.manager.service.impl;
 
 import java.util.List;
 import com.qa.common.utils.DateUtils;
-import com.qa.manager.domain.ProRequirementVo;
+import com.qa.manager.domain.Vo.ProRequirementVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.qa.manager.mapper.ProRequirementMapper;

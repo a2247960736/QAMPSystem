@@ -2,6 +2,7 @@ package com.qa.manager.service.impl;
 
 import java.util.List;
 import com.qa.common.utils.DateUtils;
+import com.qa.manager.domain.Vo.ProProjectVo;
 import com.qa.manager.service.IProProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,5 +95,10 @@ public class ProProjectServiceImpl implements IProProjectService
     public int deleteProProjectById(Long id)
     {
         return proProjectMapper.deleteProProjectById(id);
+    }
+
+    @Override
+    public List<ProProjectVo> selectProProjectVoList(ProProject proProject) {
+        return proProjectMapper.selectProProjectVoList(proProject);
     }
 }

@@ -2,6 +2,7 @@ package com.qa.manager.mapper;
 
 import java.util.List;
 import com.qa.manager.domain.ProProject;
+import com.qa.manager.domain.Vo.ProProjectVo;
 
 /**
  * 项目管理Mapper接口
@@ -58,4 +59,14 @@ public interface ProProjectMapper
      * @return 结果
      */
     public int deleteProProjectByIds(Long[] ids);
+
+
+    /**
+     * 查询项目管理列表、需求数量、用户信息
+     *
+     *
+     * @param proProject 项目管理
+     * @return ProProjectVo 包含管理列表、需求数量、用户信息
+     */
+    public List<ProProjectVo> selectProProjectVoList(ProProject proProject);
 }

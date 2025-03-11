@@ -4,7 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.qa.common.exception.ServiceException;
-import com.qa.manager.domain.ProRequirementVo;
+import com.qa.manager.domain.Vo.ProRequirementVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.qa.common.exception.ServiceException;
+import com.qa.manager.domain.Vo.ProProjectVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ public class ProProjectController extends BaseController
     public TableDataInfo list(ProProject proProject)
     {
         startPage();
-        List<ProProject> list = proProjectService.selectProProjectList(proProject);
+        List<ProProjectVo> list = proProjectService.selectProProjectVoList(proProject);
         return getDataTable(list);
     }
 

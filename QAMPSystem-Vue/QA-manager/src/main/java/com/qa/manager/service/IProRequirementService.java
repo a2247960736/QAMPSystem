@@ -2,7 +2,7 @@ package com.qa.manager.service;
 
 import java.util.List;
 import com.qa.manager.domain.ProRequirement;
-import com.qa.manager.domain.ProRequirementVo;
+import com.qa.manager.domain.Vo.ProRequirementVo;
 
 /**
  * 需求管理Service接口

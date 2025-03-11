@@ -1,6 +1,8 @@
-package com.qa.manager.domain;
+package com.qa.manager.domain.Vo;
 
 import com.qa.common.core.domain.entity.SysUser;
+import com.qa.manager.domain.ProProject;
+import com.qa.manager.domain.ProRequirement;
 import lombok.Data;
 
 /**
@@ -10,16 +12,11 @@ import lombok.Data;
  * @date 2025-03-09
  */
 @Data
-public class ProRequirementVo  extends ProRequirement{
+public class ProRequirementVo  extends ProRequirement {
 
     //项目信息
     private ProProject proProject;
 
-    //用户信息
-    private SysUser sysUser;
-
-    //需求总数
-    private int reqCount;
 
 
 

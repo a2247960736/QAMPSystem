@@ -2,7 +2,7 @@ package com.qa.manager.mapper;
 
 import java.util.List;
 import com.qa.manager.domain.ProRequirement;
-import com.qa.manager.domain.ProRequirementVo;
+import com.qa.manager.domain.Vo.ProRequirementVo;
 
 /**
  * 需求管理Mapper接口
@@ -61,7 +61,7 @@ public interface ProRequirementMapper
     public int deleteProRequirementByIds(Long[] ids);
 
     /**
-     * 查询需求管理列表 和 项目名称
+     * 查询需求管理列表 和 项目名称 、用户信息、需求数量
      * @param proRequirement
      * @return
      */

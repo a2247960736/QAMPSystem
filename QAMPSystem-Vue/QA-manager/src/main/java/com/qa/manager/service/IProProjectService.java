@@ -2,6 +2,9 @@ package com.qa.manager.service;
 
 import java.util.List;
 import com.qa.manager.domain.ProProject;
+import com.qa.manager.domain.ProRequirement;
+import com.qa.manager.domain.Vo.ProProjectVo;
+import com.qa.manager.domain.Vo.ProRequirementVo;
 
 /**
  * 项目管理Service接口
@@ -58,4 +61,11 @@ public interface IProProjectService
      * @return 结果
      */
     public int deleteProProjectById(Long id);
+
+    /**
+     * 查询需求管理列表 和 项目名称 、用户信息、需求数量
+     * @param proProject
+     * @return
+     */
+    List<ProProjectVo> selectProProjectVoList(ProProject proProject);
 }

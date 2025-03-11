@@ -15,6 +15,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="memberCount"    column="member_count"    />
     </resultMap>
 
+    <resultMap id="ProProjectVoResult" type="ProProjectVo" extends="ProProjectResult">
+        <result property="reqCount" column="req_count"/>
+        <result property="nickName" column="nick_name"/>
+    </resultMap>
+
     <sql id="selectProProjectVo">
         select id, project_id, dept_id, project_name, creator_id, create_time, requirement_count, member_count from pro_project
     </sql>
@@ -32,6 +37,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectProProjectById" parameterType="Long" resultMap="ProProjectResult">
         <include refid="selectProProjectVo"/>
         where id = #{id}
+    </select>
+    <select id="selectProProjectVoList" resultType="com.qa.manager.domain.Vo.ProProjectVo">
+        SELECT
+        pp.*,
+        COUNT(pr.id) AS req_count,
+        su.nick_name  <!-- 确保字段名与数据库一致 -->
+        FROM pro_project pp
+        LEFT JOIN pro_requirement pr ON pp.id = pr.project_id
+        LEFT JOIN sys_user su ON pp.creator_id = su.user_id
+        <where>
+            <if test="projectId != null and projectId != ''">pp.project_id = #{projectId}</if>
+            <if test="projectName != null and projectName != ''">AND pp.project_name LIKE CONCAT('%', #{projectName}, '%')</if>
+            <if test="deptId != null "> and pp.dept_id = #{deptId}</if>
+            <if test="creatorId != null "> and pp.creator_id = #{creatorId}</if>
+        </where>
+        GROUP BY pp.id
     </select>
 
     <insert id="insertProProject" parameterType="ProProject" useGeneratedKeys="true" keyProperty="id">

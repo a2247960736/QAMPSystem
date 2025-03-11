@@ -27,14 +27,7 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建者" prop="creatorId">
-        <el-input
-          v-model="queryParams.creatorId"
-          placeholder="请输入创建者"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
+      
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -106,26 +99,36 @@
         </template>
       </el-table-column>
      
-      <el-table-column label="创建者" align="center" prop="creatorId" />
+            <el-table-column label="创建者" align="center" prop="nickName">
+        <template #default="scope">
+          {{ scope.row.nickName || '未知用户' }}
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="需求总数" align="center" prop="requirementCount" />
+      <el-table-column label="需求总数" align="center" prop="reqCount" />
       <el-table-column label="成员数" align="center" prop="memberCount" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
-            <router-link 
-      :to="'/manager/requirement/data/index/' + scope.row.id" 
-      class="link-type"
-      v-hasPermi="['manager:project:list']">
-      <el-button link type="primary" icon="Edit">查看详情</el-button>
-    </router-link>
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:project:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manager:project:remove']">删除</el-button>
-        </template>
-      </el-table-column>
+     <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300">
+  <template #default="scope">
+    <el-space :size="8">
+      <router-link 
+        :to="'/manager/requirement/data/index/' + scope.row.id" 
+        class="link-type"
+        v-hasPermi="['manager:project:list']">
+        <el-button link type="primary" icon="View">详情</el-button>
+      </router-link>
+      <el-button link type="warning" icon="User" @click="handleInvite(scope.row)" 
+        v-hasPermi="['manager:project:edit']">邀请</el-button>
+      <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" 
+        v-hasPermi="['manager:project:edit']">修改</el-button>
+      <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)"
+        v-hasPermi="['manager:project:remove']">删除</el-button>
+    </el-space>
+  </template>
+</el-table-column>
     </el-table>
     
     <pagination
@@ -271,6 +274,11 @@ function handleUpdate(row) {
     open.value = true;
     title.value = "修改项目管理";
   });
+}
+
+// 邀请成员逻辑实现
+function handleInvite(row) {
+  
 }
 
 /** 提交按钮 */
