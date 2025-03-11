@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qa.manager.mapper.ProRequirementMapper">
+    
+    <resultMap type="ProRequirement" id="ProRequirementResult">
+        <result property="id"    column="id"    />
+        <result property="reqId"    column="req_id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="title"    column="title"    />
+        <result property="priority"    column="priority"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <resultMap type="ProRequirementVo" id="ProRequirementResultVo">
+        <!-- 继承父类字段映射 -->
+        <id property="id" column="id"/>
+        <result property="reqId" column="req_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="title" column="title"/>
+        <result property="priority" column="priority"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+
+        <!-- 关联项目表字段 -->
+        <association property="proProject" javaType="ProProject">
+            <result property="deptId" column="dept_id"/>
+            <result property="projectName" column="project_name"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectProRequirementVo">
+        select id, req_id, project_id, title, priority, status, create_time from pro_requirement
+    </sql>
+
+    <select id="selectProRequirementList" parameterType="ProRequirement" resultMap="ProRequirementResult">
+        <include refid="selectProRequirementVo"/>
+        <where>  
+            <if test="reqId != null  and reqId != ''"> and req_id = #{reqId}</if>
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="priority != null  and priority != ''"> and priority = #{priority}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectProRequirementById" parameterType="Long" resultMap="ProRequirementResult">
+        <include refid="selectProRequirementVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectProRequirementVoList" resultMap="ProRequirementResultVo">
+        select
+        pq.id,
+        pq.req_id,
+        pq.project_id,
+        pq.title,
+        pq.priority,
+        pq.status,
+        pq.create_time,
+        pp.dept_id,
+        pp.project_name
+        from pro_requirement pq
+        join pro_project pp on pq.project_id = pp.id
+        <where>
+            <if test="reqId != null  and reqId != ''"> and pq.req_id = #{reqId}</if>
+            <if test="projectId != null"> and pq.project_id = #{projectId}</if>
+            <if test="title != null  and title != ''"> and pq.title like concat('%', #{title}, '%')</if>
+            <if test="priority != null  and priority != ''"> and pq.priority = #{priority}</if>
+            <if test="status != null  and status != ''"> and pq.status = #{status}</if>
+        </where>
+    </select>
+
+
+    <insert id="insertProRequirement" parameterType="ProRequirement" useGeneratedKeys="true" keyProperty="id">
+        insert into pro_requirement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reqId != null">req_id,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="priority != null and priority != ''">priority,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reqId != null">#{reqId},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="priority != null and priority != ''">#{priority},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProRequirement" parameterType="ProRequirement">
+        update pro_requirement
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reqId != null">req_id = #{reqId},</if>
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="priority != null and priority != ''">priority = #{priority},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProRequirementById" parameterType="Long">
+        delete from pro_requirement where id = #{id}
+    </delete>
+
+    <delete id="deleteProRequirementByIds" parameterType="String">
+        delete from pro_requirement where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

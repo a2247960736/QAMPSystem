@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qa.manager.mapper.ProProjectMapper">
+    
+    <resultMap type="ProProject" id="ProProjectResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="creatorId"    column="creator_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="requirementCount"    column="requirement_count"    />
+        <result property="memberCount"    column="member_count"    />
+    </resultMap>
+
+    <sql id="selectProProjectVo">
+        select id, project_id, dept_id, project_name, creator_id, create_time, requirement_count, member_count from pro_project
+    </sql>
+
+    <select id="selectProProjectList" parameterType="ProProject" resultMap="ProProjectResult">
+        <include refid="selectProProjectVo"/>
+        <where>  
+            <if test="projectId != null  and projectId != ''"> and project_id = #{projectId}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
+            <if test="creatorId != null "> and creator_id = #{creatorId}</if>
+        </where>
+    </select>
+    
+    <select id="selectProProjectById" parameterType="Long" resultMap="ProProjectResult">
+        <include refid="selectProProjectVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertProProject" parameterType="ProProject" useGeneratedKeys="true" keyProperty="id">
+        insert into pro_project
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="projectName != null and projectName != ''">project_name,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="requirementCount != null">requirement_count,</if>
+            <if test="memberCount != null">member_count,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="projectName != null and projectName != ''">#{projectName},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="requirementCount != null">#{requirementCount},</if>
+            <if test="memberCount != null">#{memberCount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProProject" parameterType="ProProject">
+        update pro_project
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="projectName != null and projectName != ''">project_name = #{projectName},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="requirementCount != null">requirement_count = #{requirementCount},</if>
+            <if test="memberCount != null">member_count = #{memberCount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProProjectById" parameterType="Long">
+        delete from pro_project where id = #{id}
+    </delete>
+
+    <delete id="deleteProProjectByIds" parameterType="String">
+        delete from pro_project where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
