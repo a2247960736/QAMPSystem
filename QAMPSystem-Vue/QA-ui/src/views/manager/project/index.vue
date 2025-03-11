@@ -99,9 +99,9 @@
         </template>
       </el-table-column>
      
-            <el-table-column label="创建者" align="center" prop="nickName">
+            <el-table-column label="创建者" align="center" prop="creatorName">
         <template #default="scope">
-          {{ scope.row.nickName || '未知用户' }}
+          {{ scope.row.creatorName || '未知用户' }}
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -110,7 +110,11 @@
         </template>
       </el-table-column>
       <el-table-column label="需求总数" align="center" prop="reqCount" />
-      <el-table-column label="成员数" align="center" prop="memberCount" />
+       <el-table-column label="成员数" align="center" prop="calculatedMemberCount">
+        <template #default="scope">
+          {{ scope.row.calculatedMemberCount || 0 }}
+        </template>
+      </el-table-column>
      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300">
   <template #default="scope">
     <el-space :size="8">
@@ -167,12 +171,65 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog title="邀请成员加入项目" v-model="data.inviteDialogVisible" width="600px" @close="handleInviteClose">
+  <el-form label-width="80px">
+    <el-form-item label="项目名称">
+      <el-input :model-value="data.currentProject?.projectName" disabled/>
+    </el-form-item>
+     <!-- 已有成员展示 -->
+    <el-form-item label="已有成员">
+      <div class="existing-members" style="width: 100%">
+        <el-scrollbar>
+          <div class="select-style">
+            <el-tag
+              v-for="userId in data.currentProject?.userIds"
+              :key="userId"
+              :closable="false"
+              class="custom-tag"
+              disable-transitions
+            >
+              {{ getUserName(userId) }}
+            </el-tag>
+            <span v-if="!data.currentProject?.userIds?.length" class="placeholder">暂无成员</span>
+          </div>
+        </el-scrollbar>
+      </div>
+    </el-form-item>
+
+    <el-form-item label="选择成员">
+      <el-select 
+        v-model="data.selectedUsers"
+        multiple
+        filterable
+        placeholder="请选择要邀请的成员"
+        style="width: 100%"
+      >
+        <el-option
+  v-for="user in data.userList.filter(u => !data.currentProject?.userIds?.includes(u.userId))"
+  :key="user.userId"
+  :label="user.nickName"
+  :value="user.userId"
+/>
+      </el-select>
+    </el-form-item>
+  </el-form>
+  <template #footer>
+    <el-button @click="data.inviteDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleInviteSubmit">邀 请</el-button>
+  </template>
+</el-dialog>
   </div>
 </template>
 
 <script setup name="Project">
 import { listProject, getProject, delProject, addProject, updateProject } from "@/api/manager/project";
-
+// 导入成员管理相关接口
+import { listMember, getMember, delMember, addMember, updateMember } from "@/api/manager/member";
+//导入用户管理相关接口
+import { listUser, getUser, delUser, addUser, updateUser } from "@/api/manager/user";
+//新增api/page
+import { loadAllParams } from "@/api/page/page";
 const { proxy } = getCurrentInstance();
 const { sys_dept } = proxy.useDict('sys_dept');
 
@@ -185,6 +242,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const memberList = ref([]);
 
 const data = reactive({
   form: {},
@@ -278,7 +336,37 @@ function handleUpdate(row) {
 
 // 邀请成员逻辑实现
 function handleInvite(row) {
+  data.currentProject = row;
+  getUserList();
   
+}
+
+/** 邀请成员提交 */
+function handleInviteSubmit() {
+  if (!data.selectedUsers.length) {
+    proxy.$modal.msgWarning("请至少选择一个成员");
+    return;
+  }
+  
+  const formData = {
+    projectId: data.currentProject.id,
+    userIds: data.selectedUsers
+  };
+
+  addMember(formData).then(response => {
+    proxy.$modal.msgSuccess("邀请成功");
+    data.inviteDialogVisible = false;
+    getList(); // 刷新项目列表
+    getMemberList(data.currentProject); // 刷新成员列表
+  }).catch(error => {
+    proxy.$modal.msgError("邀请失败");
+  });
+}
+
+// 邀请对话框关闭回调
+function handleInviteClose() {
+  data.selectedUsers = []
+  data.currentProject = null
 }
 
 /** 提交按钮 */
@@ -320,5 +408,61 @@ function handleExport() {
   }, `project_${new Date().getTime()}.xlsx`)
 }
 
+/** 查询项目成员列表 */
+function getMemberList(row) {
+  loading.value = true;
+  listMember(row.value).then(response => {
+    memberList.value = response.rows;
+    total.value = response.total;
+    loading.value = false;
+  });
+}
+
+/** 查询可以邀请的用户信息列表 */
+function getUserList() {
+  // 加载用户列表
+  loading.value = true;
+  listUser(loadAllParams).then(response => {
+    data.userList = response.rows;
+    data.inviteDialogVisible = true; // 打开对话框
+  }).catch(error => {
+    proxy.$modal.msgError("用户加载失败");
+  }).finally(() => {
+    loading.value = false;
+  });
+}
+
+// 在 methods 中添加用户ID转姓名方法
+function getUserName(userId) {
+  const user = data.userList.find(u => u.userId === userId) 
+    || projectList.value.flatMap(p => p.userIds).find(u => u.userId === userId);
+  return user?.nickName || `用户#${userId}`;
+}
+
 getList();
+
 </script>
+
+<style scoped>
+/* 保持与 el-select 相同的样式 */
+.select-style {
+  width: 100%;
+  min-height: 32px;
+  padding: 1px 11px;
+  border: 1px solid var(--el-border-color);
+  border-radius: 4px;
+  background-color: var(--el-disabled-bg-color);
+  cursor: not-allowed;
+}
+
+.custom-tag {
+  margin: 2px;
+  background-color: var(--el-fill-color-light);
+  color: var(--el-text-color-regular);
+}
+
+.placeholder {
+  color: var(--el-text-color-placeholder);
+  line-height: 30px;
+}
+</style>

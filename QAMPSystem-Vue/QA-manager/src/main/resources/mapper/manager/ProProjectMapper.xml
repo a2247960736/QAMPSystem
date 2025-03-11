@@ -16,8 +16,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <resultMap id="ProProjectVoResult" type="ProProjectVo" extends="ProProjectResult">
+        <result property="creatorName" column="nick_name"/>
         <result property="reqCount" column="req_count"/>
-        <result property="nickName" column="nick_name"/>
+        <result property="calculatedMemberCount" column="calculated_member_count"/>
+        <result property="userIds" column="user_ids" typeHandler="com.qa.common.handler.LongListTypeHandler"/>
     </resultMap>
 
     <sql id="selectProProjectVo">
@@ -38,19 +40,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectProProjectVo"/>
         where id = #{id}
     </select>
-    <select id="selectProProjectVoList" resultType="com.qa.manager.domain.Vo.ProProjectVo">
+    <select id="selectProProjectVoList" resultMap="ProProjectVoResult">
         SELECT
-        pp.*,
-        COUNT(pr.id) AS req_count,
-        su.nick_name  <!-- 确保字段名与数据库一致 -->
+        pp.id,
+        pp.project_id,
+        pp.dept_id,
+        pp.project_name,
+        pp.creator_id,
+        pp.create_time,
+        pp.requirement_count,
+        pp.member_count,
+        su.nick_name,
+        COUNT(DISTINCT pr.id) AS req_count,
+        COUNT(DISTINCT pm.user_id) AS calculated_member_count,
+        GROUP_CONCAT(DISTINCT pm.user_id) AS user_ids  <!-- 添加DISTINCT去重 -->
         FROM pro_project pp
-        LEFT JOIN pro_requirement pr ON pp.id = pr.project_id
         LEFT JOIN sys_user su ON pp.creator_id = su.user_id
+        LEFT JOIN pro_requirement pr ON pp.id = pr.project_id
+        LEFT JOIN project_member pm ON pp.id = pm.project_id
         <where>
             <if test="projectId != null and projectId != ''">pp.project_id = #{projectId}</if>
             <if test="projectName != null and projectName != ''">AND pp.project_name LIKE CONCAT('%', #{projectName}, '%')</if>
-            <if test="deptId != null "> and pp.dept_id = #{deptId}</if>
-            <if test="creatorId != null "> and pp.creator_id = #{creatorId}</if>
+            <if test="deptId != null">AND pp.dept_id = #{deptId}</if>
+            <if test="creatorId != null">AND pp.creator_id = #{creatorId}</if>
         </where>
         GROUP BY pp.id
     </select>

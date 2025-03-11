@@ -101,19 +101,14 @@
 
     <el-table v-loading="loading" :data="requirementList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-     <el-table-column label="序号" align="center" width="80">
-    <template #default="scope">
-      {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
-    </template>
-  </el-table-column>
+      <el-table-column label="技术主键" align="center" prop="id" />
       <el-table-column label="业务ID" align="center" prop="reqId" />
-      <el-table-column label="需求标题" align="center" prop="title" />
      <el-table-column label="所属项目" align="center" prop="projectId">
   <template #default="scope">
     {{ scope.row.proProject?.projectName || '未知项目' }}  <!-- 直接显示嵌套对象中的项目名称 -->
   </template>
 </el-table-column>
-      
+      <el-table-column label="需求标题" align="center" prop="title" />
       <el-table-column label="优先级" align="center" prop="priority">
         <template #default="scope">
           <dict-tag :options="priority" :value="scope.row.priority"/>

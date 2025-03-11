@@ -37,6 +37,8 @@ public class ProProjectController extends BaseController
     @Autowired
     private IProProjectService proProjectService;
 
+
+
     /**
      * 查询项目管理列表
      */
@@ -45,7 +47,9 @@ public class ProProjectController extends BaseController
     public TableDataInfo list(ProProject proProject)
     {
         startPage();
+        //查询项目信息
         List<ProProjectVo> list = proProjectService.selectProProjectVoList(proProject);
+        //查询项目成员
         return getDataTable(list);
     }
 
@@ -118,4 +122,7 @@ public class ProProjectController extends BaseController
         }
 
     }
+
+
+
 }
