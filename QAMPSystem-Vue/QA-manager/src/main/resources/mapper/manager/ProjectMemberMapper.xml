@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qa.manager.mapper.ProjectMemberMapper">
+    
+    <resultMap type="ProjectMember" id="ProjectMemberResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <resultMap id="ProjectMemberVoResult" type="ProjectMemberVo" extends="ProjectMemberResult">
+        <result property="nickName" column="nick_name"/>
+    </resultMap>
+
+    <sql id="selectProjectMemberVo">
+        select id, project_id, user_id, create_time from project_member
+    </sql>
+
+    <select id="selectProjectMemberList" parameterType="ProjectMember" resultMap="ProjectMemberResult">
+        <include refid="selectProjectMemberVo"/>
+        <where>  
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectProjectMemberById" parameterType="Long" resultMap="ProjectMemberResult">
+        <include refid="selectProjectMemberVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectProjectMemberVoList" resultType="com.qa.manager.domain.Vo.ProjectMemberVo">
+        SELECT
+        pm.*,
+        u.nick_name
+        FROM project_member pm
+        LEFT JOIN sys_user u ON pm.user_id = u.user_id
+        <where>
+            u.del_flag = '0'
+            <if test="projectId != null">AND pm.project_id = #{projectId}</if>
+            <if test="userId != null">AND pm.user_id = #{userId}</if>
+        </where>
+    </select>
+
+    <insert id="insertProjectMember" parameterType="ProjectMember" useGeneratedKeys="true" keyProperty="id">
+        insert into project_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+    <insert id="batchInsertProjectMembers">
+        INSERT INTO project_member (project_id, user_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.projectId}, #{item.userId})
+        </foreach>
+    </insert>
+
+    <update id="updateProjectMember" parameterType="ProjectMember">
+        update project_member
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProjectMemberById" parameterType="Long">
+        delete from project_member where id = #{id}
+    </delete>
+
+    <delete id="deleteProjectMemberByIds" parameterType="String">
+        delete from project_member where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

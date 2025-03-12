@@ -121,7 +121,7 @@ public class ProRequirementController extends BaseController {
         proRequirementToReqId.setReqId(reqId);
         List<ProRequirement> list = proRequirementService.selectProRequirementList(proRequirementToReqId);
         if (list.size() > 0) {
-            throw new ServiceException("业务Id已存在，请重新创建！");
+            throw new ServiceException("业务标识已存在，请重新创建！");
         }
     }
 
