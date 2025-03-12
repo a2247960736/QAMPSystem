@@ -100,8 +100,12 @@
     </el-row>
 
     <el-table v-loading="loading" :data="requirementList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="技术主键" align="center" prop="id" />
+       <el-table-column type="selection" width="55" align="center" />
+       <el-table-column label="序号" align="center" width="80">
+    <template #default="scope">
+      {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
+    </template>
+  </el-table-column>
       <el-table-column label="业务ID" align="center" prop="reqId" />
      <el-table-column label="所属项目" align="center" prop="projectId">
   <template #default="scope">
@@ -109,23 +113,73 @@
   </template>
 </el-table-column>
       <el-table-column label="需求标题" align="center" prop="title" />
-      <el-table-column label="优先级" align="center" prop="priority">
-        <template #default="scope">
-          <dict-tag :options="priority" :value="scope.row.priority"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="需求状态" align="center" prop="status">
-        <template #default="scope">
-          <dict-tag :options="req_status" :value="scope.row.status"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:requirement:edit']">创建测试计划</el-button>
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manager:requirement:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manager:requirement:remove']">删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column 
+  label="优先级" 
+  align="center" 
+  prop="priority"
+  width="120"
+  sortable
+>
+  <template #default="scope">
+    <el-tag 
+      :type="{'P0':'danger', 'P1':'warning', 'P2':'success'}[scope.row.priority]"
+      effect="dark"
+    >
+      {{ priority.find(v => v.value === scope.row.priority)?.label || 'N/A' }}
+    </el-tag>
+  </template>
+</el-table-column>
+
+<el-table-column 
+  label="需求状态" 
+  align="center" 
+  prop="status"
+  width="150"
+  sortable
+>
+  <template #default="scope">
+    <el-tag
+      :type="{
+        'NEW':'info',
+        'IN_PROGRESS':'primary',
+        'BLOCKED':'danger',
+        'DONE':'success'
+      }[scope.row.status]"
+      :effect="scope.row.status === 'IN_PROGRESS' ? 'light' : 'dark'"
+    >
+      {{ req_status.find(v => v.value === scope.row.status)?.label || 'N/A' }}
+    </el-tag>
+  </template>
+</el-table-column>
+      <el-table-column 
+  label="操作" 
+  align="center" 
+  class-name="small-padding fixed-width"
+  width="300"
+>
+  <template #default="scope">
+    <el-space :size="25">
+      <el-button 
+        link 
+        type="success" 
+        icon="DocumentAdd" 
+        @click="handleCreateTestPlan(scope.row)"
+        v-hasPermi="['manager:requirement:createPlan']">创建测试计划</el-button>
+      <el-button 
+        link 
+        type="primary" 
+        icon="Edit" 
+        @click="handleUpdate(scope.row)"
+        v-hasPermi="['manager:requirement:edit']">修改</el-button>
+      <el-button 
+        link 
+        type="danger" 
+        icon="Delete" 
+        @click="handleDelete(scope.row)"
+        v-hasPermi="['manager:requirement:remove']">删除</el-button>
+    </el-space>
+  </template>
+</el-table-column>
     </el-table>
     
     <pagination
@@ -156,7 +210,7 @@
           <el-input v-model="form.title" placeholder="请输入需求标题" />
         </el-form-item>
         <el-form-item label="优先级" prop="priority">
-          <el-select v-model="form.priority" placeholder="请选择优先级">
+          <el-select v-model="form.priority" placeholder="请选择">
             <el-option
               v-for="dict in priority"
               :key="dict.value"
@@ -166,7 +220,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="需求状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择需求状态">
+          <el-select v-model="form.status" placeholder="请选择">
             <el-option
               v-for="dict in req_status"
               :key="dict.value"

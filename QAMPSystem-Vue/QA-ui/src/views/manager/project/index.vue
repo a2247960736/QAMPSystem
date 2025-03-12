@@ -163,7 +163,7 @@
           <el-input v-model="form.projectId" placeholder="请输入业务标识" />
         </el-form-item>
         <el-form-item label="所属部门" prop="deptId">
-          <el-select v-model="form.deptId" placeholder="请选择所属部门">
+          <el-select v-model="form.deptId" placeholder="请选择">
             <el-option
               v-for="dict in sys_dept"
               :key="dict.value"
