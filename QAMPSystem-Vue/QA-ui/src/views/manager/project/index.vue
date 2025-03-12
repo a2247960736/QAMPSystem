@@ -109,7 +109,20 @@
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="需求总数" align="center" prop="reqCount" />
+      <el-table-column label="需求总数" align="center" prop="reqCount" width="100">
+  <template #header>
+    <span style="margin-right:8px">需求总数</span>
+    <el-tooltip effect="dark" placement="top">
+      <template #content>当前需求总数仅统计未完成的需求</template>
+      <el-icon class="info-icon">
+        <QuestionFilled />
+      </el-icon>
+    </el-tooltip>
+  </template>
+  <template #default="scope">
+    {{ scope.row.reqCount }}
+  </template>
+</el-table-column>
        <el-table-column label="成员数" align="center" prop="calculatedMemberCount">
         <template #default="scope">
           {{ scope.row.calculatedMemberCount || 0 }}
@@ -464,5 +477,20 @@ getList();
 .placeholder {
   color: var(--el-text-color-placeholder);
   line-height: 30px;
+}
+</style>
+
+<style scoped>
+
+
+.info-icon {
+  color: #909399;
+  font-size: 14px;
+  cursor: help;
+  transition: color 0.2s;
+}
+
+.info-icon:hover {
+  color: #409eff;
 }
 </style>

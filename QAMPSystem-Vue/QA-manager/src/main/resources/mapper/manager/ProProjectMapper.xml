@@ -51,9 +51,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         pp.requirement_count,
         pp.member_count,
         su.nick_name,
-        COUNT(DISTINCT pr.id) AS req_count,
+        COUNT(DISTINCT CASE WHEN pr.status != 'DONE' THEN pr.id END) AS req_count,  <!-- 新增状态过滤 -->
         COUNT(DISTINCT pm.user_id) AS calculated_member_count,
-        GROUP_CONCAT(DISTINCT pm.user_id) AS user_ids  <!-- 添加DISTINCT去重 -->
+        GROUP_CONCAT(DISTINCT pm.user_id) AS user_ids
         FROM pro_project pp
         LEFT JOIN sys_user su ON pp.creator_id = su.user_id
         LEFT JOIN pro_requirement pr ON pp.id = pr.project_id
