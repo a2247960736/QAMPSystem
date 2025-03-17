@@ -94,4 +94,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <!-- 查询逾期任务 -->
+    <select id="selectOverdueTasksList" resultType="PersonalTask">
+        SELECT id
+        FROM personal_task
+        WHERE status NOT IN ('COMPLETED', 'OVERDUE','PAUSED')
+          AND end_time &lt; #{updateTime}
+    </select>
+
+    <!-- 批量更新状态 -->
+    <update id="batchUpdateStatus">
+        UPDATE personal_task
+        SET status = #{status},
+        update_time = NOW()
+        WHERE id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

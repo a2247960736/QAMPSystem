@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
+
+import com.qa.common.core.domain.entity.SysDept;
+import com.qa.system.domain.vo.SysUserVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +68,8 @@ public class SysUserServiceImpl implements ISysUserService
     @Autowired
     protected Validator validator;
 
+
+
     /**
      * 根据条件分页查询用户列表
      * 
@@ -75,8 +80,14 @@ public class SysUserServiceImpl implements ISysUserService
     @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysUser> selectUserList(SysUser user)
     {
+
+
+
+        //如果user里面的isDev为Null
         return userMapper.selectUserList(user);
     }
+
+
 
     /**
      * 根据条件分页查询已分配用户角色列表
@@ -547,4 +558,26 @@ public class SysUserServiceImpl implements ISysUserService
         }
         return successMsg.toString();
     }
+
+    /**
+     * 查询测试部门及其子部门的所有用户
+     * @param
+     * @return 用户列表
+     */
+    @Override
+    public List<SysUser> selectUsersByTestDept() {
+        return userMapper.selectUsersByTestDept();
+    }
+
+    /**
+     * 查询研发部门及其子部门的所有用户
+     * @param
+     * @return 用户列表
+     */
+    @Override
+    public List<SysUser> selectUsersByDevDept() {
+        return userMapper.selectUsersByDevDept();
+    }
+
+
 }

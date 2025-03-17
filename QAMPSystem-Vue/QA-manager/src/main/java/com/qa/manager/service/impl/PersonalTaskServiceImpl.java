@@ -2,6 +2,7 @@ package com.qa.manager.service.impl;
 
 import java.util.List;
 import com.qa.common.utils.DateUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.qa.manager.mapper.PersonalTaskMapper;
@@ -92,5 +93,30 @@ public class PersonalTaskServiceImpl implements IPersonalTaskService
     public int deletePersonalTaskById(Long id)
     {
         return personalTaskMapper.deletePersonalTaskById(id);
+    }
+
+    /**
+     * 查询逾期任务列表
+     * @return 逾期任务列表
+     */
+    @Override
+    public List<PersonalTask> selectOverdueTasksList(PersonalTask personalTask){
+        return personalTaskMapper.selectOverdueTasksList(personalTask);
+    }
+
+    /**
+     * 批量更新任务状态
+     * @param ids 任务ID列表
+     * @param status 新的任务状态
+     * @return 更新的记录数
+     * @param ids
+     * @param status
+     * @return
+     */
+    @Override
+    public int batchUpdateStatus(@Param("ids") List<Long> ids,
+                                 @Param("status") String status){
+        int result = personalTaskMapper.batchUpdateStatus(ids, status);
+        return result;
     }
 }

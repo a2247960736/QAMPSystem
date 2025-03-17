@@ -47,11 +47,28 @@
       </div>
     </div>
 
-    <!-- 弹窗 -->
+     <!-- 弹窗 -->
 <el-dialog v-model="dialogVisible" :title="`${selectedDate} 任务详情`" width="60%">
   <el-table :data="tasksOnSelectedDate" stripe style="width: 100%">
     <el-table-column type="index" width="50" label="序号" />
     <el-table-column prop="taskName" label="任务名称" min-width="180" />
+    <!-- 新增的三个字段 -->
+    <el-table-column label="开始时间" width="120">
+      <template #default="{row}">
+        {{ parseTime(row.startTime, '{y}-{m}-{d}') }}
+      </template>
+    </el-table-column>
+    <el-table-column label="结束时间" width="120">
+      <template #default="{row}">
+        {{ parseTime(row.endTime, '{y}-{m}-{d}') }}
+      </template>
+    </el-table-column>
+    <el-table-column label="工时" width="100">
+      <template #default="{row}">
+        {{ row.estimatedHours || 0 }} 小时
+      </template>
+    </el-table-column>
+    <!-- 原有字段保持不动 -->
     <el-table-column label="优先级" width="100">
       <template #default="{row}">
         <el-tag :type="priorityTagType[row.priority]">

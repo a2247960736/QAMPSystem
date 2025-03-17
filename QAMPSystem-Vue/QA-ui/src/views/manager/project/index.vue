@@ -83,8 +83,8 @@
       {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
     </template>
   </el-table-column>
-      <el-table-column label="业务ID" align="center" prop="projectId" />
-      <el-table-column label="项目名称" align="center" prop="projectName">
+      <el-table-column label="业务标识" align="center" prop="projectId" />
+      <el-table-column label="项目名称" align="center" prop="projectName" width="120">
     <template #default="scope">
         <router-link 
             :to="'/manager/requirement/data/index/' + scope.row.id"
@@ -104,7 +104,7 @@
           {{ scope.row.creatorName || '未知用户' }}
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="100">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
@@ -406,7 +406,7 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除项目管理编号为"' + _ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除"「' + row.projectName + '」"项目？').then(function() {
     return delProject(_ids);
   }).then(() => {
     getList();

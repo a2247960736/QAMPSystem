@@ -141,7 +141,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
 		select user_id, email from sys_user where email = #{email} and del_flag = '0' limit 1
 	</select>
-	
+	<select id="selectUsersByTestDept" resultType="com.qa.common.core.domain.entity.SysUser">
+		SELECT u.*
+		FROM sys_user u
+				 JOIN sys_dept d ON u.dept_id = d.dept_id
+		WHERE d.dept_id = 101 -- 直接属于测试部门的用户
+		   OR FIND_IN_SET('101', d.ancestors) -- 属于测试部门子部门的用户
+	</select>
+	<select id="selectUsersByDevDept" resultType="com.qa.common.core.domain.entity.SysUser">
+		SELECT u.*
+		FROM sys_user u
+				 JOIN sys_dept d ON u.dept_id = d.dept_id
+		WHERE d.dept_id = 110 -- 直接属于研发部门的用户
+		   OR FIND_IN_SET('110', d.ancestors) -- 属于研发部门子部门的用户
+	</select>
+
 	<insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
  		insert into sys_user(
  			<if test="userId != null and userId != 0">user_id,</if>

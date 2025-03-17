@@ -9,6 +9,24 @@ export function listUser(query) {
   })
 }
 
+// 查询用户信息列表
+export function devListUser(query) {
+  return request({
+    url: '/system/user/devList',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询用户信息列表
+export function qaListUser(query) {
+  return request({
+    url: '/system/user/qaList',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询用户信息详细
 export function getUser(userId) {
   return request({

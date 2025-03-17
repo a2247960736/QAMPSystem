@@ -2,6 +2,7 @@ package com.qa.manager.service;
 
 import java.util.List;
 import com.qa.manager.domain.PersonalTask;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 个人任务管理Service接口
@@ -58,4 +59,22 @@ public interface IPersonalTaskService
      * @return 结果
      */
     public int deletePersonalTaskById(Long id);
+
+    /**
+     * 查询逾期任务列表
+     * @return 逾期任务列表
+     */
+    public List<PersonalTask> selectOverdueTasksList(PersonalTask personalTask);
+
+    /**
+     * 批量更新任务状态
+     * @param ids 任务ID列表
+     * @param status 新的任务状态
+     * @return 更新的记录数
+     * @param ids
+     * @param status
+     * @return
+     */
+    public int batchUpdateStatus(@Param("ids") List<Long> ids,
+                                 @Param("status") String status);
 }

@@ -79,22 +79,22 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="taskList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="filteredTaskList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
        <el-table-column label="序号" align="center" width="80">
     <template #default="scope">
       {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
     </template>
   </el-table-column>
-      <el-table-column label="任务名称" align="center" prop="taskName" />
+      <el-table-column label="任务名称" align="center" prop="taskName" width="180"/>
       
       
-      <el-table-column label="任务开始时间" align="center" prop="startTime" width="180">
+      <el-table-column label="任务开始时间" align="center" prop="startTime" width="130">
         <template #default="scope">
           <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="任务结束时间" align="center" prop="endTime" width="180">
+      <el-table-column label="任务结束时间" align="center" prop="endTime" width="130">
         <template #default="scope">
           <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
         </template>
@@ -143,7 +143,7 @@
   label="操作" 
   align="center" 
   class-name="small-padding fixed-width" 
-  width="300"
+  width="200"
 >
   <template #default="scope">
     <el-space :size="25">
@@ -215,7 +215,7 @@
             placeholder="请选择">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="分配工时：" prop="estimatedHours">
+        <el-form-item label="分配工时" prop="estimatedHours">
   <div style="display: flex;align-items: center;gap: 10px">
     <el-input 
       v-model="form.estimatedHours" 
@@ -224,6 +224,7 @@
       style="width: 230px;"
       type="number"
       :min="0"
+      @input="handleHoursInput"
     >
       <template #append>小时</template>
     </el-input>
@@ -298,18 +299,32 @@ endTime: [
             callback();
           }
         },
-        trigger: 'blur'
+        trigger: ['blur', 'change']
       }
     ]
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
+//
+const filteredTaskList = ref([]);
 /** 查询个人任务管理列表 */
 function getList() {
   loading.value = true;
   listTask(queryParams.value).then(response => {
     taskList.value = response.rows;
+    // 创建过滤后的副本
+    filteredTaskList.value = taskList.value.filter(task => {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      if (task.status === 'COMPLETED' && task.endTime) {
+        const endDate = new Date(task.endTime);
+        const taskEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+        return today <= taskEndDate;
+      }
+      return true;
+    });
     total.value = response.total;
     loading.value = false;
   });
@@ -336,6 +351,7 @@ function reset() {
     estimatedHours: null,
     actualHours: null
   };
+  originalStatus.value = null;
   proxy.resetForm("taskRef");
 }
 
@@ -368,39 +384,46 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const _id = row.id || ids.value
+   const _id = row.id || ids.value
   getTask(_id).then(response => {
     form.value = response.data;
+    originalStatus.value = response.data.status; // 保存原始状态
     open.value = true;
     title.value = "修改个人任务管理";
   });
 }
 
 /** 提交按钮 */
-function submitForm() {
-  proxy.$refs["taskRef"].validate(valid => {
-    if (valid) {
-      if (form.value.id != null) {
-        updateTask(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
-      } else {
-        addTask(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
-      }
+/** 提交按钮 */
+async function submitForm() {
+  try {
+    const valid = await proxy.$refs["taskRef"].validate();
+    if (!valid) return;
+
+    // 状态校验逻辑
+    if (form.value.status === 'COMPLETED' && originalStatus.value !== 'COMPLETED') {
+      await proxy.$modal.confirm('任务已完成后将无法再修改，确认要提交吗？');
     }
-  });
+
+    // 统一使用await处理异步
+    const apiCall = form.value.id ? updateTask(form.value) : addTask(form.value);
+    const res = await apiCall;
+    
+    proxy.$modal.msgSuccess(form.value.id ? "修改成功" : "新增成功");
+    open.value = false;
+    getList();
+  } catch (error) {
+    // 用户点击取消或请求失败时静默处理
+    if (error !== 'cancel') {
+      console.error('提交失败:', error);
+    }
+  }
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除个人任务管理编号为"' + _ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除"「' + row.taskName + '」"任务？').then(function() {
     return delTask(_ids);
   }).then(() => {
     getList();
@@ -417,6 +440,7 @@ function handleExport() {
 
 getList();
 
+//新增修改任务计算可用工时
 // 新增响应式变量
 const maxHours = ref(0);
 
@@ -461,5 +485,17 @@ watch([() => form.value.startTime, () => form.value.endTime], ([newStart, newEnd
     maxHours.value = 0;
   }
 });
+
+//修改任务状态为已完成是，提醒用户确认
+// 新增变量存储原始状态
+const originalStatus = ref(null);
+
+const handleHoursInput = (value) => {
+  if (Number(value) > maxHours.value) {
+    form.value.estimatedHours = Math.min(Number(value), maxHours.value);
+  }
+};
+
+
 
 </script>

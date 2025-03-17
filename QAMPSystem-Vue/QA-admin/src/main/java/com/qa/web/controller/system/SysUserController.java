@@ -3,6 +3,8 @@ package com.qa.web.controller.system;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.qa.system.domain.vo.SysUserVo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -61,7 +63,33 @@ public class SysUserController extends BaseController
     public TableDataInfo list(SysUser user)
     {
         startPage();
+
         List<SysUser> list = userService.selectUserList(user);
+        return getDataTable(list);
+    }
+
+    /**
+     * 获取开发用户列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/devList")
+    public TableDataInfo getDevList(SysUser user)
+    {
+        startPage();
+        List<SysUser> list = userService.selectUsersByDevDept();
+        return getDataTable(list);
+    }
+
+
+    /**
+     * 获取测试用户列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/qaList")
+    public TableDataInfo getQAList(SysUser user)
+    {
+        startPage();
+        List<SysUser> list = userService.selectUsersByTestDept();
         return getDataTable(list);
     }
 

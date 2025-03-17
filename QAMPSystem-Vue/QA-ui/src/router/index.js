@@ -208,7 +208,27 @@ export const dynamicRoutes = [
         }
       }
     ]
-  }
+  },// ...其他路由配置保持不变...
+  {
+    path: '/manager/plan/data',
+    component: Layout,
+    hidden: true,
+    permissions: ['manager:plan:list'],
+    children: [
+      {
+        path: 'index/:reqId',  // 动态路由参数
+        component: () => import('@/views/manager/plan/data'),
+        name: 'PlanData',
+        meta: {
+          title: '需求计划详情',
+          activeMenu: '/manager/requirement'
+        }
+      }
+    ]
+  },
+  // ...其他路由配置...
+  
+
 ]
 
 const router = createRouter({

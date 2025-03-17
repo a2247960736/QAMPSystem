@@ -34,6 +34,10 @@
             <groupId>com.qa</groupId>
             <artifactId>QA-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.qa</groupId>
+            <artifactId>QA-manager</artifactId>
+        </dependency>
 
     </dependencies>
 

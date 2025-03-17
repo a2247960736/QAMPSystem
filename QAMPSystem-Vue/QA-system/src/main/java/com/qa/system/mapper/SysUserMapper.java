@@ -19,6 +19,24 @@ public interface SysUserMapper
      */
     public List<SysUser> selectUserList(SysUser sysUser);
 
+
+    /**
+     * 根据条件分页查询开发用户列表
+     *
+     * @param sysUser 用户信息
+     * @return 用户信息集合信息
+     */
+    public List<SysUser> selectDevUserList(SysUser sysUser);
+
+
+    /**
+     * 根据条件分页查询测试用户列表
+     *
+     * @param sysUser 用户信息
+     * @return 用户信息集合信息
+     */
+    public List<SysUser> selectQaUserList(SysUser sysUser);
+
     /**
      * 根据条件分页查询已配用户角色列表
      * 
@@ -124,4 +142,19 @@ public interface SysUserMapper
      * @return 结果
      */
     public SysUser checkEmailUnique(String email);
+
+    /**
+     * 查询测试部门及其子部门的所有用户
+     * @param
+     * @return 用户列表
+     */
+    public List<SysUser> selectUsersByTestDept();
+
+    /**
+     * 查询研发部门及其子部门的所有用户
+     * @param
+     * @return 用户列表
+     */
+    public List<SysUser> selectUsersByDevDept();
+
 }

@@ -2,6 +2,8 @@ package com.qa.system.service;
 
 import java.util.List;
 import com.qa.common.core.domain.entity.SysUser;
+import org.apache.ibatis.annotations.Param;
+
 
 /**
  * 用户 业务层
@@ -203,4 +205,18 @@ public interface ISysUserService
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
+
+    /**
+     * 查询测试部门及其子部门的所有用户
+     * @param
+     * @return 用户列表
+     */
+    public List<SysUser> selectUsersByTestDept();
+
+    /**
+     * 查询研发部门及其子部门的所有用户
+     * @param
+     * @return 用户列表
+     */
+    public List<SysUser> selectUsersByDevDept();
 }

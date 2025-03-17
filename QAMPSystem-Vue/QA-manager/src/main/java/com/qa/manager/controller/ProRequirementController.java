@@ -108,7 +108,7 @@ public class ProRequirementController extends BaseController {
         if (reqStatus.equals(ProjConstants.STATUS_DONE)) {
             //当前需求已完成，禁止修改 如需修改请联系管理员
 
-            throw new ServiceException("当前需求已完成，禁止修改！如需帮助请联系管理员");
+            throw new ServiceException("当前需求已完成，禁止修改！如需帮助请联系部门Leader");
         }
         return toAjax(proRequirementService.updateProRequirement(proRequirement));
     }
