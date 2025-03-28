@@ -1,4 +1,4 @@
-package com.qa.manager.domain.Vo;
+package com.qa.manager.domain.Dto;
 
 import com.qa.manager.domain.ProjectMember;
 import io.swagger.annotations.ApiModel;

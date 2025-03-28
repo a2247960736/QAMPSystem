@@ -65,42 +65,13 @@
           icon="Plus"
           @click="handleAdd"
           v-hasPermi="['manager:requirement:add']"
-        >新增</el-button>
+        >新增需求</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manager:requirement:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['manager:requirement:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manager:requirement:export']"
-        >导出</el-button>
-      </el-col>
+      
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="requirementList" @selection-change="handleSelectionChange">
-       <el-table-column type="selection" width="55" align="center" />
        <el-table-column label="序号" align="center" width="80">
     <template #default="scope">
       {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
