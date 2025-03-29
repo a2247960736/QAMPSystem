@@ -47,46 +47,18 @@
           v-hasPermi="['manager:task:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manager:task:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['manager:task:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manager:task:export']"
-        >导出</el-button>
-      </el-col>
+   
+    
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="filteredTaskList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
        <el-table-column label="序号" align="center" width="80">
     <template #default="scope">
       {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
     </template>
   </el-table-column>
-      <el-table-column label="任务名称" align="center" prop="taskName" width="180"/>
+      <el-table-column label="任务名称" align="center" prop="taskName" width="300"/>
       
       
       <el-table-column label="任务开始时间" align="center" prop="startTime" width="130">
@@ -99,7 +71,7 @@
           <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="工时" align="center" prop="estimatedHours" />
+      <el-table-column label="工时" align="center" prop="estimatedHours" width="50"/>
       <el-table-column 
   label="任务优先级" 
   align="center" 

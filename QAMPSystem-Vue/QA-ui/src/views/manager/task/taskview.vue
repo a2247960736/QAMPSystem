@@ -340,7 +340,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  overflow-y: auto; /* 添加垂直滚动 */
+  overflow-y: overlay; /* 添加垂直滚动 */
+  padding-right: 4px; /* 为滚动条留出空间 */
   max-height: 90px; /* 限制最大高度 */
    scrollbar-width: thin;  
 }

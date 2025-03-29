@@ -1,5 +1,6 @@
 package com.qa.manager.domain.request.record;
 
+import com.qa.common.annotation.Excel;
 import com.qa.common.utils.StringUtils;
 import com.qa.manager.domain.request.ParamValidate;
 import io.swagger.annotations.ApiModel;
@@ -16,6 +17,10 @@ public class RecordUpdateReq implements ParamValidate {
     // 添加无参构造器
     public RecordUpdateReq() {
     }
+
+    /** 执行的用例id */
+    @Excel(name = "执行的用例id")
+    private Long caseId;
 
     /**
      * 任务 ID
@@ -64,6 +69,14 @@ public class RecordUpdateReq implements ParamValidate {
      */
     @ApiModelProperty(value = "预期开始时间，若设置预期结束时间，则此时间也必须设置，反之亦然")
     private Long expectStartTime;
+
+
+    @Excel(name = "任务执行内容")
+    private String caseContent;
+
+    /** 执行人 */
+    @Excel(name = "执行人")
+    private String executors;
 
     @Override
     public void validate() {
