@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qa.manager.mapper.ExecRecordMapper">
+
+    <resultMap type="com.qa.manager.domain.request.record.ExecRecord" id="ExecRecordResult">
+        <result property="id"    column="id"    />
+        <result property="caseId"    column="case_id"    />
+        <result property="title"    column="title"    />
+        <result property="env"    column="env"    />
+        <result property="caseContent"    column="case_content"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="passCount"    column="pass_count"    />
+        <result property="totalCount"    column="total_count"    />
+        <result property="successCount"    column="success_count"    />
+        <result property="ignoreCount"    column="ignore_count"    />
+        <result property="blockCount"    column="block_count"    />
+        <result property="failCount"    column="fail_count"    />
+        <result property="creator"    column="creator"    />
+        <result property="modifier"    column="modifier"    />
+        <result property="executors"    column="executors"    />
+        <result property="description"    column="description"    />
+        <result property="chooseContent"    column="choose_content"    />
+        <result property="gmtCreated"    column="gmt_created"    />
+        <result property="gmtModified"    column="gmt_modified"    />
+        <result property="expectStartTime"    column="expect_start_time"    />
+        <result property="expectEndTime"    column="expect_end_time"    />
+        <result property="actualStartTime"    column="actual_start_time"    />
+        <result property="actualEndTime"    column="actual_end_time"    />
+        <result property="owner"    column="owner"    />
+    </resultMap>
+
+    <sql id="selectExecRecordVo">
+        select id, case_id, title, env, case_content, is_delete, pass_count, total_count, success_count, creator, modifier, executors, description, choose_content, gmt_created, gmt_modified, expect_start_time, expect_end_time, actual_start_time, actual_end_time, owner from exec_record
+    </sql>
+
+    <select id="selectExecRecordList" parameterType="com.qa.manager.domain.request.record.ExecRecord" resultMap="ExecRecordResult">
+        <include refid="selectExecRecordVo"/>
+        <where>  
+            <if test="caseId != null "> and case_id = #{caseId}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="env != null "> and env = #{env}</if>
+            <if test="caseContent != null  and caseContent != ''"> and case_content = #{caseContent}</if>
+            <if test="isDelete != null "> and is_delete = #{isDelete}</if>
+            <if test="passCount != null "> and pass_count = #{passCount}</if>
+            <if test="totalCount != null "> and total_count = #{totalCount}</if>
+            <if test="successCount != null "> and success_count = #{successCount}</if>
+            <if test="creator != null  and creator != ''"> and creator = #{creator}</if>
+            <if test="modifier != null  and modifier != ''"> and modifier = #{modifier}</if>
+            <if test="executors != null  and executors != ''"> and executors = #{executors}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="chooseContent != null  and chooseContent != ''"> and choose_content = #{chooseContent}</if>
+            <if test="gmtCreated != null "> and gmt_created = #{gmtCreated}</if>
+            <if test="gmtModified != null "> and gmt_modified = #{gmtModified}</if>
+            <if test="expectStartTime != null "> and expect_start_time = #{expectStartTime}</if>
+            <if test="expectEndTime != null "> and expect_end_time = #{expectEndTime}</if>
+            <if test="actualStartTime != null "> and actual_start_time = #{actualStartTime}</if>
+            <if test="actualEndTime != null "> and actual_end_time = #{actualEndTime}</if>
+            <if test="owner != null  and owner != ''"> and owner = #{owner}</if>
+        </where>
+    </select>
+    
+    <select id="selectExecRecordById" parameterType="Long" resultMap="ExecRecordResult">
+        <include refid="selectExecRecordVo"/>
+        where id = #{id}
+    </select>
+
+
+    <sql id="Base_Column_List">
+        id, case_id, title, env, is_delete, pass_count, total_count, success_count, fail_count, block_count, ignore_count,
+    creator, modifier, description, choose_content, executors, gmt_created, gmt_modified, expect_start_time, expect_end_time, owner
+    </sql>
+    <sql id="Blob_Column_List">
+        case_content
+    </sql>
+
+    <select id="selectOne" resultType="com.qa.manager.domain.request.record.ExecRecord">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from exec_record
+        where id = #{id}
+    </select>
+
+    <select id="getRecordListByCaseId" resultType="com.qa.manager.domain.request.record.ExecRecord">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from exec_record
+        where case_id = #{caseId,jdbcType=BIGINT} and is_delete = 0
+        order by id desc
+    </select>
+    <select id="getRecordNumByCaseIds" parameterType="java.lang.Long" resultType="com.qa.manager.domain.Dto.RecordNumDto">
+        select case_id as caseId, count(*) as recordNum from exec_record
+        where case_id in
+        <foreach collection="list" item="caseId" open="(" separator="," close=")">
+            #{caseId}
+        </foreach>
+        and is_delete=0
+        group by case_id
+    </select>
+
+    <insert id="insertExecRecord" parameterType="com.qa.manager.domain.request.record.ExecRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into exec_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="caseId != null">case_id,</if>
+            <if test="title != null">title,</if>
+            <if test="env != null">env,</if>
+            <if test="caseContent != null">case_content,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="passCount != null">pass_count,</if>
+            <if test="totalCount != null">total_count,</if>
+            <if test="successCount != null">success_count,</if>
+            <if test="creator != null">creator,</if>
+            <if test="modifier != null">modifier,</if>
+            <if test="executors != null">executors,</if>
+            <if test="description != null">description,</if>
+            <if test="chooseContent != null">choose_content,</if>
+            <if test="gmtCreated != null">gmt_created,</if>
+            <if test="gmtModified != null">gmt_modified,</if>
+            <if test="expectStartTime != null">expect_start_time,</if>
+            <if test="expectEndTime != null">expect_end_time,</if>
+            <if test="actualStartTime != null">actual_start_time,</if>
+            <if test="actualEndTime != null">actual_end_time,</if>
+            <if test="owner != null">owner,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="caseId != null">#{caseId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="env != null">#{env},</if>
+            <if test="caseContent != null">#{caseContent},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="passCount != null">#{passCount},</if>
+            <if test="totalCount != null">#{totalCount},</if>
+            <if test="successCount != null">#{successCount},</if>
+            <if test="creator != null">#{creator},</if>
+            <if test="modifier != null">#{modifier},</if>
+            <if test="executors != null">#{executors},</if>
+            <if test="description != null">#{description},</if>
+            <if test="chooseContent != null">#{chooseContent},</if>
+            <if test="gmtCreated != null">#{gmtCreated},</if>
+            <if test="gmtModified != null">#{gmtModified},</if>
+            <if test="expectStartTime != null">#{expectStartTime},</if>
+            <if test="expectEndTime != null">#{expectEndTime},</if>
+            <if test="actualStartTime != null">#{actualStartTime},</if>
+            <if test="actualEndTime != null">#{actualEndTime},</if>
+            <if test="owner != null">#{owner},</if>
+         </trim>
+    </insert>
+
+    <insert id="insert">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into exec_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="caseId != null">
+                case_id,
+            </if>
+            <if test="title != null" >
+                title,
+            </if>
+            <if test="env != null">
+                env,
+            </if>
+            <if test="caseContent != null">
+                case_content,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="passCount != null">
+                pass_count,
+            </if>
+            <if test="totalCount != null">
+                total_count,
+            </if>
+            <if test="failCount != null">
+                fail_count,
+            </if>
+            <if test="blockCount != null">
+                block_count,
+            </if>
+            <if test="ignoreCount != null">
+                ignore_count,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="chooseContent != null">
+                choose_content,
+            </if>
+            <if test="gmtCreated != null">
+                gmt_created,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="expectStartTime != null">
+                expect_start_time,
+            </if>
+            <if test="expectEndTime != null">
+                expect_end_time,
+            </if>
+            <if test="owner != null">
+                owner
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="caseId != null">
+                #{caseId,jdbcType=BIGINT},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="env != null">
+                #{env,jdbcType=INTEGER},
+            </if>
+            <if test="caseContent != null">
+                #{caseContent,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="passCount != null">
+                #{passCount,jdbcType=INTEGER},
+            </if>
+            <if test="totalCount != null">
+                #{totalCount,jdbcType=INTEGER},
+            </if>
+            <if test="failCount != null">
+                #{failCount,jdbcType=INTEGER},
+            </if>
+            <if test="blockCount != null">
+                #{blockCount,jdbcType=INTEGER},
+            </if>
+            <if test="ignoreCount != null">
+                #{ignoreCount,jdbcType=INTEGER},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="chooseContent != null">
+                #{chooseContent,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreated != null">
+                #{gmtCreated,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectStartTime != null">
+                #{expectStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectEndTime != null">
+                #{expectEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="owner != null">
+                #{owner,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateExecRecord" parameterType="com.qa.manager.domain.request.record.ExecRecord">
+        update exec_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="caseId != null">case_id = #{caseId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="env != null">env = #{env},</if>
+            <if test="caseContent != null">case_content = #{caseContent},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="passCount != null">pass_count = #{passCount},</if>
+            <if test="totalCount != null">total_count = #{totalCount},</if>
+            <if test="successCount != null">success_count = #{successCount},</if>
+            <if test="creator != null">creator = #{creator},</if>
+            <if test="modifier != null">modifier = #{modifier},</if>
+            <if test="executors != null">executors = #{executors},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="chooseContent != null">choose_content = #{chooseContent},</if>
+            <if test="gmtCreated != null">gmt_created = #{gmtCreated},</if>
+            <if test="gmtModified != null">gmt_modified = #{gmtModified},</if>
+            <if test="expectStartTime != null">expect_start_time = #{expectStartTime},</if>
+            <if test="expectEndTime != null">expect_end_time = #{expectEndTime},</if>
+            <if test="actualStartTime != null">actual_start_time = #{actualStartTime},</if>
+            <if test="actualEndTime != null">actual_end_time = #{actualEndTime},</if>
+            <if test="owner != null">owner = #{owner},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="update">
+        update exec_record
+        <set>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="passCount != null">
+                pass_count = #{passCount,jdbcType=INTEGER},
+            </if>
+            <if test="totalCount != null">
+                total_count = #{totalCount,jdbcType=INTEGER},
+            </if>
+            <if test="successCount != null">
+                success_count = #{successCount,jdbcType=INTEGER},
+            </if>
+            <if test="failCount != null">
+                fail_count = #{failCount,jdbcType=INTEGER},
+            </if>
+            <if test="blockCount != null">
+                block_count = #{blockCount,jdbcType=INTEGER},
+            </if>
+            <if test="ignoreCount != null">
+                ignore_count = #{ignoreCount,jdbcType=INTEGER},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="executors != null">
+                executors = #{executors,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null" >
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="caseContent != null">
+                case_content = #{caseContent,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="edit">
+        update exec_record
+        <set>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null" >
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="chooseContent != null" >
+                choose_content = #{chooseContent,jdbcType=VARCHAR},
+            </if>
+            <if test="expectStartTime!=null">
+                expect_start_time = #{expectStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectStartTime==null">
+                expect_start_time = '1971-01-01 00:00:00',
+            </if>
+            <if test="expectEndTime!=null">
+                expect_end_time = #{expectEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expectEndTime==null">
+                expect_end_time = '1971-01-01 00:00:00',
+            </if>
+            <if test="owner != null">
+                owner = #{owner, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="batchDelete">
+        update exec_record set is_delete = 1 where id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="deleteExecRecordById" parameterType="Long">
+        delete from exec_record where id = #{id}
+    </delete>
+
+    <delete id="deleteExecRecordByIds" parameterType="String">
+        delete from exec_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="delete">
+        update exec_record set is_delete =1
+        where id = #{recordId,jdbcType=BIGINT}
+    </delete>
+</mapper>

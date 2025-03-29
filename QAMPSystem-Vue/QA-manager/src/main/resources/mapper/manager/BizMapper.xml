@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qa.manager.mapper.BizMapper">
+    
+    <resultMap type="Biz" id="BizResult">
+        <result property="id"    column="id"    />
+        <result property="productLineId"    column="product_line_id"    />
+        <result property="content"    column="content"    />
+        <result property="channel"    column="channel"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="gmtCreated"    column="gmt_created"    />
+        <result property="gmtModified"    column="gmt_modified"    />
+    </resultMap>
+
+    <sql id="selectBizVo">
+        select id, product_line_id, content, channel, is_delete, gmt_created, gmt_modified from biz
+    </sql>
+
+    <select id="selectBizList" parameterType="Biz" resultMap="BizResult">
+        <include refid="selectBizVo"/>
+        <where>  
+            <if test="productLineId != null "> and product_line_id = #{productLineId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="channel != null "> and channel = #{channel}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizById" parameterType="Long" resultMap="BizResult">
+        <include refid="selectBizVo"/>
+        where id = #{id}
+    </select>
+
+    <sql id="Base_Column_List">
+        id, product_line_id, channel, is_delete, gmt_modified, gmt_created
+    </sql>
+    <sql id="Blob_Column_List">
+        content
+    </sql>
+    <select id="selectOne" resultType="com.qa.manager.domain.Biz">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from biz where product_line_id = #{productLineId, jdbcType=BIGINT} and is_delete=0 and channel = #{channel, jdbcType=INTEGER}
+    </select>
+
+    <insert id="insertBiz" parameterType="Biz" useGeneratedKeys="true" keyProperty="id">
+        insert into biz
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productLineId != null">product_line_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="channel != null">channel,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="gmtCreated != null">gmt_created,</if>
+            <if test="gmtModified != null">gmt_modified,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productLineId != null">#{productLineId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="channel != null">#{channel},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="gmtCreated != null">#{gmtCreated},</if>
+            <if test="gmtModified != null">#{gmtModified},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBiz" parameterType="Biz">
+        update biz
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productLineId != null">product_line_id = #{productLineId},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="channel != null">channel = #{channel},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="gmtCreated != null">gmt_created = #{gmtCreated},</if>
+            <if test="gmtModified != null">gmt_modified = #{gmtModified},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateContent">
+        update biz
+        set content = #{content, jdbcType=LONGVARCHAR}
+        where product_line_id = #{productLineId, jdbcType=BIGINT} and channel = #{channel, jdbcType=INTEGER}
+    </update>
+    <update id="update">
+        update biz
+        set product_line_id = #{productLineId,jdbcType=BIGINT},
+            channel = #{channel,jdbcType=INTEGER},
+            is_delete = #{isDelete,jdbcType=INTEGER},
+            gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
+            content = #{content,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteBizById" parameterType="Long">
+        delete from biz where id = #{id}
+    </delete>
+
+    <delete id="deleteBizByIds" parameterType="String">
+        delete from biz where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qa.manager.mapper.ProTestPlanMapper">
+    
+    <resultMap type="ProTestPlan" id="ProTestPlanResult">
+        <result property="id"    column="id"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="reqId"    column="req_id"    />
+        <result property="planName"    column="plan_name"    />
+        <result property="submitterId"    column="submitter_id"    />
+        <result property="leaderId"    column="leader_id"    />
+        <result property="ccEmails"    column="cc_emails"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="submitTime"    column="submit_time"    />
+    </resultMap>
+
+    <sql id="selectProTestPlanVo">
+        select id, plan_id, req_id, plan_name, submitter_id, leader_id, cc_emails, status, create_time, update_time, submit_time from pro_test_plan
+    </sql>
+
+    <select id="selectProTestPlanList" parameterType="ProTestPlan" resultMap="ProTestPlanResult">
+        <include refid="selectProTestPlanVo"/>
+        <where>  
+            <if test="planId != null  and planId != ''"> and plan_id = #{planId}</if>
+            <if test="reqId != null "> and req_id = #{reqId}</if>
+            <if test="planName != null  and planName != ''"> and plan_name like concat('%', #{planName}, '%')</if>
+            <if test="submitterId != null "> and submitter_id = #{submitterId}</if>
+            <if test="leaderId != null "> and leader_id = #{leaderId}</if>
+            <if test="ccEmails != null  and ccEmails != ''"> and cc_emails = #{ccEmails}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="submitTime != null "> and submit_time = #{submitTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectProTestPlanById" parameterType="Long" resultMap="ProTestPlanResult">
+        <include refid="selectProTestPlanVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectProTestPlanListVo" resultType="com.qa.manager.domain.Vo.ProTestPlanVo">
+        SELECT
+            p.id,
+            p.plan_id,
+            p.req_id,
+            p.plan_name,
+            p.submitter_id,
+            p.leader_id,
+            p.cc_emails,
+            p.status,
+            p.create_time,
+            p.update_time,
+            p.submit_time,
+            r.title,
+            u1.nick_name AS devName,
+            u2.nick_name AS testName
+        FROM pro_test_plan p
+                 LEFT JOIN pro_requirement r ON p.req_id = r.id
+                 LEFT JOIN sys_user u1 ON p.submitter_id = u1.user_id
+                 LEFT JOIN sys_user u2 ON p.leader_id = u2.user_id
+        <where>
+            <if test="planId != null  and planId != ''"> and p.plan_id = #{planId}</if>
+            <if test="reqId != null "> and p.req_id = #{reqId}</if>
+            <if test="planName != null  and planName != ''"> and p.plan_name like concat('%', #{planName}, '%')</if>
+            <if test="submitterId != null "> and p.submitter_id = #{submitterId}</if>
+            <if test="leaderId != null "> and p.leader_id = #{leaderId}</if>
+            <if test="ccEmails != null  and ccEmails != ''"> and p.cc_emails = #{ccEmails}</if>
+            <if test="status != null  and status != ''"> and p.status = #{status}</if>
+            <if test="submitTime != null "> and p.submit_time = #{submitTime}</if>
+        </where>
+
+    </select>
+
+    <insert id="insertProTestPlan" parameterType="ProTestPlan" useGeneratedKeys="true" keyProperty="id">
+        insert into pro_test_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="planId != null and planId != ''">plan_id,</if>
+            <if test="reqId != null">req_id,</if>
+            <if test="planName != null and planName != ''">plan_name,</if>
+            <if test="submitterId != null">submitter_id,</if>
+            <if test="leaderId != null">leader_id,</if>
+            <if test="ccEmails != null and ccEmails != ''">cc_emails,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="submitTime != null">submit_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="planId != null and planId != ''">#{planId},</if>
+            <if test="reqId != null">#{reqId},</if>
+            <if test="planName != null and planName != ''">#{planName},</if>
+            <if test="submitterId != null">#{submitterId},</if>
+            <if test="leaderId != null">#{leaderId},</if>
+            <if test="ccEmails != null and ccEmails != ''">#{ccEmails},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="submitTime != null">#{submitTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProTestPlan" parameterType="ProTestPlan">
+        update pro_test_plan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="planId != null and planId != ''">plan_id = #{planId},</if>
+            <if test="reqId != null">req_id = #{reqId},</if>
+            <if test="planName != null and planName != ''">plan_name = #{planName},</if>
+            <if test="submitterId != null">submitter_id = #{submitterId},</if>
+            <if test="leaderId != null">leader_id = #{leaderId},</if>
+            <if test="ccEmails != null and ccEmails != ''">cc_emails = #{ccEmails},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProTestPlanById" parameterType="Long">
+        delete from pro_test_plan where id = #{id}
+    </delete>
+
+    <delete id="deleteProTestPlanByIds" parameterType="String">
+        delete from pro_test_plan where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

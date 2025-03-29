@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qa.manager.mapper.TestCaseMapper">
+    
+    <resultMap type="TestCase" id="TestCaseResult">
+        <result property="id"    column="id"    />
+        <result property="caseId"    column="case_id"    />
+        <result property="title"    column="title"    />
+        <result property="env"    column="env"    />
+        <result property="caseContent"    column="case_content"    />
+        <result property="isDelete"    column="is_delete"    />
+        <result property="passCount"    column="pass_count"    />
+        <result property="totalCount"    column="total_count"    />
+        <result property="successCount"    column="success_count"    />
+        <result property="ignoreCount"    column="ignore_count"    />
+        <result property="blockCount"    column="block_count"    />
+        <result property="failCount"    column="fail_count"    />
+        <result property="creator"    column="creator"    />
+        <result property="modifier"    column="modifier"    />
+        <result property="executors"    column="executors"    />
+        <result property="description"    column="description"    />
+        <result property="chooseContent"    column="choose_content"    />
+        <result property="gmtCreated"    column="gmt_created"    />
+        <result property="gmtModified"    column="gmt_modified"    />
+        <result property="expectStartTime"    column="expect_start_time"    />
+        <result property="expectEndTime"    column="expect_end_time"    />
+        <result property="actualStartTime"    column="actual_start_time"    />
+        <result property="actualEndTime"    column="actual_end_time"    />
+        <result property="owner"    column="owner"    />
+    </resultMap>
+
+    <sql id="selectTestCaseVo">
+        select id, group_id, title, description, is_delete, creator, modifier, case_content, gmt_created, gmt_modified, extra, product_line_id, case_type, module_node_id, plan_id, smk_case_id, channel, biz_id from test_case
+    </sql>
+
+    <select id="selectTestCaseList" parameterType="TestCase" resultMap="TestCaseResult">
+        <include refid="selectTestCaseVo"/>
+        <where>
+            <if test="caseId != null "> and case_id = #{caseId}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="env != null "> and env = #{env}</if>
+            <if test="caseContent != null  and caseContent != ''"> and case_content = #{caseContent}</if>
+            <if test="isDelete != null "> and is_delete = #{isDelete}</if>
+            <if test="passCount != null "> and pass_count = #{passCount}</if>
+            <if test="totalCount != null "> and total_count = #{totalCount}</if>
+            <if test="successCount != null "> and success_count = #{successCount}</if>
+            <if test="ignoreCount != null "> and ignore_count = #{ignoreCount}</if>
+            <if test="blockCount != null "> and block_count = #{blockCount}</if>
+            <if test="failCount != null "> and fail_count = #{failCount}</if>
+            <if test="creator != null  and creator != ''"> and creator = #{creator}</if>
+            <if test="modifier != null  and modifier != ''"> and modifier = #{modifier}</if>
+            <if test="executors != null  and executors != ''"> and executors = #{executors}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="chooseContent != null  and chooseContent != ''"> and choose_content = #{chooseContent}</if>
+            <if test="gmtCreated != null "> and gmt_created = #{gmtCreated}</if>
+            <if test="gmtModified != null "> and gmt_modified = #{gmtModified}</if>
+            <if test="expectStartTime != null "> and expect_start_time = #{expectStartTime}</if>
+            <if test="expectEndTime != null "> and expect_end_time = #{expectEndTime}</if>
+            <if test="actualStartTime != null "> and actual_start_time = #{actualStartTime}</if>
+            <if test="actualEndTime != null "> and actual_end_time = #{actualEndTime}</if>
+            <if test="owner != null  and owner != ''"> and owner = #{owner}</if>
+        </where>
+    </select>
+    
+    <select id="selectTestCaseById" parameterType="Long" resultMap="TestCaseResult">
+        <include refid="selectTestCaseVo"/>
+        where id = #{id}
+    </select>
+    <select id="findCaseIdsInBiz" resultType="java.lang.String">
+        select id from test_case
+        where is_delete = 0 and product_line_id = #{productLineId} and case_type = 0 and channel = #{channel}
+    </select>
+    <sql id="Base_Column_List">
+        id, group_id, title, description, is_delete, creator, modifier, gmt_created, gmt_modified,
+    extra, product_line_id, case_type, module_node_id, plan_id, smk_case_id, channel, biz_id
+    </sql>
+    <sql id="Blob_Column_List">
+        case_content
+    </sql>
+    <select id="selectOne" resultType="com.qa.manager.domain.TestCase">
+        select
+        <include refid="Base_Column_List" /> , <include refid="Blob_Column_List" />
+        from test_case
+        where id = #{id}
+    </select>
+    <select id="search" parameterType="java.lang.Long" resultMap="TestCaseResult">
+        select
+        <include refid="Base_Column_List" />
+        from test_case
+        where is_delete = 0 and case_type = #{caseType,jdbcType=INTEGER}
+        <if test="caseType != null">
+            and case_type = #{caseType, jdbcType=INTEGER}
+        </if>
+        <if test="title != null and title != ''">
+            and title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="creator != null and creator != ''">
+            and creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="planId != null and planId != ''">
+            and plan_id = #{planId,jdbcType=VARCHAR}
+        </if>
+        <if test="beginTime != null">
+            and gmt_created &gt;= #{beginTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="endTime != null">
+            and gmt_created &lt;= #{endTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="channel!= null ">
+            and channel = #{channel,jdbcType=INTEGER}
+        </if>
+        <if test="caseKeyWords != null and caseKeyWords != ''">
+            and case_content like concat('%', #{caseKeyWords,jdbcType=INTEGER}, '%')
+        </if>
+        and product_line_id = #{productLineId}
+        and id in
+        <foreach collection="caseIds" item="caseId" index="index" open="(" close=")" separator=",">
+            #{caseId,jdbcType=BIGINT}
+        </foreach>
+        order by id desc
+    </select>
+    <select id="listCreators" resultType="java.lang.String">
+        select distinct(creator) from test_case
+        <where>
+            <if test="caseType != null and caseType != ''">
+                and case_type=#{caseType,jdbcType=INTEGER}
+            </if>
+            <if test="productLineId != null and productLineId != ''">
+                and product_line_id=#{productLineId,jdbcType=BIGINT}
+            </if>
+            and is_delete=0 and creator!=''
+        </where>
+    </select>
+
+    <insert id="insertTestCase" parameterType="TestCase" useGeneratedKeys="true" keyProperty="id">
+        insert into test_case
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="groupId != null">group_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="isDelete != null">is_delete,</if>
+            <if test="creator != null">creator,</if>
+            <if test="modifier != null">modifier,</if>
+            <if test="caseContent != null">case_content,</if>
+            <if test="gmtCreated != null">gmt_created,</if>
+            <if test="gmtModified != null">gmt_modified,</if>
+            <if test="extra != null">extra,</if>
+            <if test="productLineId != null">product_line_id,</if>
+            <if test="caseType != null">case_type,</if>
+            <if test="moduleNodeId != null">module_node_id,</if>
+            <if test="planId != null">plan_id,</if>
+            <if test="smkCaseId != null">smk_case_id,</if>
+            <if test="channel != null">channel,</if>
+            <if test="bizId != null">biz_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="groupId != null">#{groupId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="isDelete != null">#{isDelete},</if>
+            <if test="creator != null">#{creator},</if>
+            <if test="modifier != null">#{modifier},</if>
+            <if test="caseContent != null">#{caseContent},</if>
+            <if test="gmtCreated != null">#{gmtCreated},</if>
+            <if test="gmtModified != null">#{gmtModified},</if>
+            <if test="extra != null">#{extra},</if>
+            <if test="productLineId != null">#{productLineId},</if>
+            <if test="caseType != null">#{caseType},</if>
+            <if test="moduleNodeId != null">#{moduleNodeId},</if>
+            <if test="planId != null">#{planId},</if>
+            <if test="smkCaseId != null">#{smkCaseId},</if>
+            <if test="channel != null">#{channel},</if>
+            <if test="bizId != null">#{bizId},</if>
+         </trim>
+    </insert>
+    <insert id="insert">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into test_case
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="groupId != null">
+                group_id,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="gmtCreated != null">
+                gmt_created,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="extra != null">
+                extra,
+            </if>
+            <if test="productLineId != null">
+                product_line_id,
+            </if>
+            <if test="caseType != null">
+                case_type,
+            </if>
+            <if test="moduleNodeId != null">
+                module_node_id,
+            </if>
+            <if test="planId != null">
+                plan_id,
+            </if>
+            <if test="smkCaseId != null">
+                smk_case_id,
+            </if>
+            <if test="caseContent != null">
+                case_content,
+            </if>
+            <if test="channel != null">
+                channel,
+            </if>
+            <if test="bizId != null">
+                biz_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="groupId != null">
+                #{groupId,jdbcType=BIGINT},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreated != null">
+                #{gmtCreated,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="extra != null">
+                #{extra,jdbcType=VARCHAR},
+            </if>
+            <if test="productLineId != null">
+                #{productLineId,jdbcType=BIGINT},
+            </if>
+            <if test="caseType != null">
+                #{caseType,jdbcType=INTEGER},
+            </if>
+            <if test="moduleNodeId != null">
+                #{moduleNodeId,jdbcType=BIGINT},
+            </if>
+            <if test="planId != null">
+                #{planId,jdbcType=BIGINT},
+            </if>
+            <if test="smkCaseId != null">
+                #{smkCaseId,jdbcType=BIGINT},
+            </if>
+            <if test="caseContent != null">
+                #{caseContent,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="channel != null">
+                #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="bizId != null">
+                #{bizId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateTestCase" parameterType="TestCase">
+        update test_case
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="groupId != null">group_id = #{groupId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="isDelete != null">is_delete = #{isDelete},</if>
+            <if test="creator != null">creator = #{creator},</if>
+            <if test="modifier != null">modifier = #{modifier},</if>
+            <if test="caseContent != null">case_content = #{caseContent},</if>
+            <if test="gmtCreated != null">gmt_created = #{gmtCreated},</if>
+            <if test="gmtModified != null">gmt_modified = #{gmtModified},</if>
+            <if test="extra != null">extra = #{extra},</if>
+            <if test="productLineId != null">product_line_id = #{productLineId},</if>
+            <if test="caseType != null">case_type = #{caseType},</if>
+            <if test="moduleNodeId != null">module_node_id = #{moduleNodeId},</if>
+            <if test="planId != null">plan_id = #{planId},</if>
+            <if test="smkCaseId != null">smk_case_id = #{smkCaseId},</if>
+            <if test="channel != null">channel = #{channel},</if>
+            <if test="bizId != null">biz_id = #{bizId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="update">
+        update test_case
+        <set>
+            <if test="groupId != null">
+                group_id = #{groupId,jdbcType=BIGINT},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreated != null">
+                gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="extra != null">
+                extra = #{extra,jdbcType=VARCHAR},
+            </if>
+            <if test="productLineId != null">
+                product_line_id = #{productLineId,jdbcType=BIGINT},
+            </if>
+            <if test="caseType != null">
+                case_type = #{caseType,jdbcType=INTEGER},
+            </if>
+            <if test="moduleNodeId != null">
+                module_node_id = #{moduleNodeId,jdbcType=BIGINT},
+            </if>
+            <if test="planId != null">
+                plan_id = #{planId,jdbcType=BIGINT},
+            </if>
+            <if test="smkCaseId != null">
+                smk_case_id = #{smkCaseId,jdbcType=BIGINT},
+            </if>
+            <if test="caseContent != null">
+                case_content = #{caseContent,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bizId != null">
+                biz_id = #{bizId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteTestCaseById" parameterType="Long">
+        delete from test_case where id = #{id}
+    </delete>
+
+    <delete id="deleteTestCaseByIds" parameterType="String">
+        delete from test_case where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="delete">
+        update test_case set is_delete = 1 where id = #{caseId}
+    </delete>
+</mapper>
