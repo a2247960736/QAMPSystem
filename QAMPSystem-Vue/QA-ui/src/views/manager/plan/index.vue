@@ -88,20 +88,20 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
     
-    <el-table 
+ <el-table 
   v-loading="loading" 
   :data="planList" 
   @selection-change="handleSelectionChange"
   stripe
-  fit
-  style="width: 100%"
+  highlight-current-row
+  style="width: 100%; --el-table-header-bg-color: #f8f9fa;"
+  :cell-style="{padding: '12px 0'}"
 >
-  
-  <el-table-column 
-    label="计划标识" 
+    <el-table-column 
+    label="计划名称" 
     align="center" 
-    prop="planId" 
-    min-width="90"
+    prop="planName" 
+    min-width="180"
     :show-overflow-tooltip="true"
   />
   
@@ -184,12 +184,13 @@
     </template>
   </el-table-column>
 
-  <el-table-column 
-  label="操作" 
-  align="center" 
-  width="120"
-  fixed="right"
->
+ <el-table-column 
+    label="操作" 
+    align="center" 
+    width="160"
+    fixed="right"
+    class-name="compact-actions"
+  >
   <template #default="scope">
     <div class="action-container">
       <!-- 新增提测按钮 -->
@@ -789,4 +790,6 @@ watch(
   padding: 8px;
   flex-shrink: 0;
 }
+
+
 </style>

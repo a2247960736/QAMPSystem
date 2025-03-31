@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">QAMP质量管理保障平台</h3>
+      <h3 class="title">质量管理保障平台</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -59,7 +59,6 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2023 ruoyi.vip All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -165,11 +164,12 @@ getCookie();
 <style lang='scss' scoped>
 .login {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
+   padding-right: 15%;  // 添加右侧间距
 }
 .title {
   margin: 0px auto 30px auto;
@@ -182,6 +182,7 @@ getCookie();
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
+   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   .el-input {
     height: 40px;
     input {

@@ -51,91 +51,113 @@
     
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-
-    <el-table v-loading="loading" :data="filteredTaskList" @selection-change="handleSelectionChange">
-       <el-table-column label="序号" align="center" width="80">
+<el-table 
+  v-loading="loading" 
+  :data="filteredTaskList" 
+  @selection-change="handleSelectionChange"
+  stripe
+  highlight-current-row
+  style="width: 100%"
+  :cell-style="{padding: '12px 0'}"
+>
+  <el-table-column type="selection" width="55" align="center" />
+  <el-table-column label="序号" align="center" width="80">
     <template #default="scope">
       {{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}
     </template>
   </el-table-column>
-      <el-table-column label="任务名称" align="center" prop="taskName" width="300"/>
-      
-      
-      <el-table-column label="任务开始时间" align="center" prop="startTime" width="130">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="任务结束时间" align="center" prop="endTime" width="130">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="工时" align="center" prop="estimatedHours" width="50"/>
-      <el-table-column 
-  label="任务优先级" 
-  align="center" 
-  prop="priority"
-  width="120"
-  sortable
->
-  <template #default="scope">
-    <el-tag 
-      :type="{'HIGH':'danger', 'MEDIUM':'warning', 'LOW':'success'}[scope.row.priority]"
-      effect="dark"
-    >
-      {{ task_priority.find(v => v.value === scope.row.priority)?.label || 'N/A' }}
-    </el-tag>
-  </template>
-</el-table-column>
+  
+  <el-table-column 
+    label="任务名称" 
+    align="center" 
+    prop="taskName" 
+    min-width="180"
+    :show-overflow-tooltip="true"
+  />
+  
+  <el-table-column 
+    label="任务时间" 
+    align="center" 
+    min-width="220"
+  >
+    <template #default="scope">
+      <div class="time-range">
+        <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d}') }}</span>
+        <el-icon><ArrowRight /></el-icon>
+        <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
+      </div>
+    </template>
+  </el-table-column>
 
+  <el-table-column label="工时" align="center" prop="estimatedHours" width="80"/>
+  
+  <el-table-column 
+    label="优先级" 
+    align="center" 
+    width="120"
+    sortable
+  >
+    <template #default="scope">
+      <el-tag 
+        :type="{'HIGH':'danger', 'MEDIUM':'warning', 'LOW':'success'}[scope.row.priority]"
+        effect="light"
+        size="small"
+      >
+        {{ task_priority.find(v => v.value === scope.row.priority)?.label || 'N/A' }}
+      </el-tag>
+    </template>
+  </el-table-column>
+
+  <el-table-column 
+    label="状态" 
+    align="center" 
+    width="130"
+    sortable
+  >
+    <template #default="scope">
+      <el-tag
+        :type="{
+          'NOT_STARTED':'info',
+          'IN_PROGRESS':'',
+          'OVERDUE':'danger',
+          'COMPLETED':'success',
+          'PAUSED':'warning'
+        }[scope.row.status]"
+        :effect="scope.row.status === 'IN_PROGRESS' ? 'plain' : 'light'"
+        size="small"
+      >
+        {{ task_status.find(v => v.value === scope.row.status)?.label || 'N/A' }}
+      </el-tag>
+    </template>
+  </el-table-column>
+  
 <el-table-column 
-  label="任务状态" 
-  align="center" 
-  prop="status"
-  width="150"
-  sortable
->
-  <template #default="scope">
-    <el-tag
-      :type="{
-        'NOT_STARTED':'info',
-        'IN_PROGRESS':'',
-        'OVERDUE':'danger',
-        'COMPLETED':'success',
-        'PAUSED':'warning'
-      }[scope.row.status]"
-      :effect="scope.row.status === 'IN_PROGRESS' ? 'plain' : 'light'"
-    >
-      {{ task_status.find(v => v.value === scope.row.status)?.label || 'N/A' }}
-    </el-tag>
-  </template>
-</el-table-column>
-     <el-table-column 
   label="操作" 
   align="center" 
-  class-name="small-padding fixed-width" 
-  width="200"
+  width="180"  
+  fixed="right"
 >
   <template #default="scope">
-    <el-space :size="25">
-     
+    <el-button-group size="small" class="action-buttons">
       <el-button 
         link 
         type="primary" 
         icon="Edit" 
         @click="handleUpdate(scope.row)"
-        v-hasPermi="['manager:task:edit']">修改</el-button>
+        v-hasPermi="['manager:task:edit']"
+      />
+      <el-divider direction="vertical" />
       <el-button 
         link 
         type="danger" 
         icon="Delete" 
         @click="handleDelete(scope.row)"
-        v-hasPermi="['manager:task:remove']">删除</el-button>
-    </el-space>
+        v-hasPermi="['manager:task:remove']"
+      />
+    </el-button-group>
   </template>
 </el-table-column>
-    </el-table>
+</el-table>
     
     <pagination
       v-show="total>0"
@@ -471,3 +493,56 @@ const handleHoursInput = (value) => {
 
 
 </script>
+<style scoped>
+:deep(.el-table__header th) {
+  font-weight: 600;
+  background-color: #f8fafc;
+}
+
+.time-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.el-tag {
+  margin: 2px 0;
+}
+
+@media screen and (max-width: 768px) {
+  :deep(.el-table__body td) {
+    padding: 8px 0;
+  }
+  
+  :deep(.el-table-column--selection .cell) {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .time-range {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .el-button-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 20px;  /* 增加按钮间距 */
+  padding: 0 8px;
+}
+
+/* 保持原有的响应式样式 */
+@media screen and (max-width: 768px) {
+  .action-buttons {
+    gap: 6px;
+  }
+}
+</style>
